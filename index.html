@@ -10,15 +10,16 @@
     document.addEventListener("DOMContentLoaded", function() {
       // Verifica se há parâmetros na URL que causam o problema
       const url = new URL(window.location.href);
-      if (url.search.includes("csf=1") || url.search.includes("web=1") || url.search.includes("e=")) {
-        // Remove os parâmetros e redireciona para a URL limpa
+      const hash = url.hash; // Armazena o hash (#faq) para manter
+      if (url.search.includes("csf=1") || url.search.includes("web=1") || url.search.includes("e=") || url.search.includes("CID=")) {
+        // Remove os parâmetros e redireciona para a URL limpa com o hash
         url.search = '';
-        window.location.href = url.toString();
+        window.location.href = url.toString() + hash;
         console.log("Redirecionando para a URL limpa...");
         return;
       }
 
-      // Se já estiver na URL limpa, garante o carregamento completo
+      // Função para garantir o carregamento de todo o conteúdo
       function forceLoadAllContent() {
         console.log("Forçando o carregamento de todos os conteúdos...");
 
@@ -47,6 +48,15 @@
             iframe.height = "600px";
           }
         });
+
+        // Força a rolagem para o FAQ se o hash estiver presente
+        if (hash) {
+          const target = document.querySelector(hash);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+            console.log("Rolando para:", hash);
+          }
+        }
 
         console.log("Conteúdo carregado e ativado.");
       }
