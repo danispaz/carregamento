@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Script de Redirecionamento Inteligente - SharePoint</title>
+  <title>Script de Recarregamento Automático - SharePoint</title>
 </head>
 <body>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      // Verifica se há parâmetros na URL que causam o problema
       const url = new URL(window.location.href);
-      const hash = url.hash; // Armazena o hash (#faq) para manter
+      const hash = url.hash;
+
+      // Verifica se há parâmetros problemáticos
       if (url.search.includes("csf=1") || url.search.includes("web=1") || url.search.includes("e=") || url.search.includes("CID=")) {
-        // Remove os parâmetros e redireciona para a URL limpa com o hash
-        url.search = '';
-        window.location.href = url.toString() + hash;
-        console.log("Redirecionando para a URL limpa...");
+        console.log("Detectados parâmetros problemáticos. Forçando recarregamento...");
+        url.search = ''; // Remove os parâmetros
+        window.location.replace(url.toString() + hash);
         return;
       }
 
-      // Função para garantir o carregamento de todo o conteúdo
+      // Função para garantir o carregamento de todo o conteúdo após o F5
       function forceLoadAllContent() {
         console.log("Forçando o carregamento de todos os conteúdos...");
 
@@ -27,6 +27,8 @@
         document.querySelectorAll("img[data-src], img[lazyload], img[loading='lazy']").forEach(img => {
           img.src = img.getAttribute("data-src") || img.src;
           img.loading = "eager";
+          img.style.display = "block";
+          img.style.visibility = "visible";
         });
 
         // Força o carregamento de todas as Web Parts (blocos de texto)
@@ -49,7 +51,7 @@
           }
         });
 
-        // Força a rolagem para o FAQ se o hash estiver presente
+        // Se o hash estiver presente, rola até ele
         if (hash) {
           const target = document.querySelector(hash);
           if (target) {
