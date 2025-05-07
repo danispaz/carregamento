@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Script de Conteúdo Completo - Carregamento Forçado</title>
+</head>
+<body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      function forceLoadAllContent() {
+        console.log("Forçando o carregamento de todos os conteúdos...");
+
+        // Força o carregamento de todas as imagens
+        document.querySelectorAll("img[data-src], img[lazyload], img[loading='lazy']").forEach(img => {
+          img.src = img.getAttribute("data-src") || img.src;
+          img.loading = "eager";
+        });
+
+        // Força o carregamento de todas as Web Parts (blocos de texto)
+        document.querySelectorAll(".webpart, .canvas-content, .ms-rte-layoutszone-inner").forEach(block => {
+          block.style.display = "block";
+          block.style.visibility = "visible";
+        });
+
+        // Força o carregamento de seções colapsadas (expansíveis)
+        document.querySelectorAll("[aria-expanded='false']").forEach(section => {
+          section.setAttribute("aria-expanded", "true");
+        });
+
+        // Força o carregamento de todos os iframes (Vercel)
+        document.querySelectorAll("iframe").forEach(iframe => {
+          if (iframe.src.includes("vercel.app")) {
+            iframe.src = iframe.src; // Recarrega o iframe
+            iframe.style.display = "block";
+            iframe.style.visibility = "visible";
+          }
+        });
+
+        // Garante que o conteúdo seja re-carregado
+        window.dispatchEvent(new Event("scroll"));
+        console.log("Conteúdo carregado e ativado.");
+      }
+
+      // Monitora mudanças na página e garante o carregamento
+      const observer = new MutationObserver(() => {
+        forceLoadAllContent();
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+
+      // Tenta carregar o conteúdo imediatamente
+      forceLoadAllContent();
+    });
+  </script>
+</body>
+</html>
