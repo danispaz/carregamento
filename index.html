@@ -3,11 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Script de Conteúdo Completo - Carregamento Forçado</title>
+  <title>Script de Redirecionamento Inteligente - SharePoint</title>
 </head>
 <body>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
+      // Verifica se há parâmetros na URL que causam o problema
+      const url = new URL(window.location.href);
+      if (url.search.includes("csf=1") || url.search.includes("web=1") || url.search.includes("e=")) {
+        // Remove os parâmetros e redireciona para a URL limpa
+        url.search = '';
+        window.location.href = url.toString();
+        console.log("Redirecionando para a URL limpa...");
+        return;
+      }
+
+      // Se já estiver na URL limpa, garante o carregamento completo
       function forceLoadAllContent() {
         console.log("Forçando o carregamento de todos os conteúdos...");
 
@@ -25,13 +36,6 @@
           block.style.height = "auto";
         });
 
-        // Força o carregamento de seções colapsadas (expansíveis)
-        document.querySelectorAll("[aria-expanded='false']").forEach(section => {
-          section.setAttribute("aria-expanded", "true");
-          section.style.display = "block";
-          section.style.visibility = "visible";
-        });
-
         // Força o carregamento de todos os iframes (Vercel)
         document.querySelectorAll("iframe").forEach(iframe => {
           if (iframe.src.includes("vercel.app")) {
@@ -44,8 +48,6 @@
           }
         });
 
-        // Garante que o conteúdo seja re-carregado
-        window.dispatchEvent(new Event("scroll"));
         console.log("Conteúdo carregado e ativado.");
       }
 
@@ -61,11 +63,6 @@
 
       // Tenta carregar o conteúdo imediatamente
       forceLoadAllContent();
-      
-      // Força recarregamento contínuo para garantir que todos os blocos apareçam
-      setInterval(() => {
-        forceLoadAllContent();
-      }, 2000);
     });
   </script>
 </body>
